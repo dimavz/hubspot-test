@@ -16,6 +16,7 @@ class HubspotWidget extends WP_Widget
 
     function widget($args, $instance)
     {
+        add_action( 'wp_footer', 'hs_add_scripts' );
         extract($args);
         extract($instance);
 
@@ -48,7 +49,10 @@ class HubspotWidget extends WP_Widget
                 <input type="text" name="hs_email" id="hs_email">
             </p>
             <p>
-                <input type="submit" id="hs_submit" name="hs_submit" value="Отправить"> <span id="loader" style="display: none;"><img src="<?php echo plugins_url( 'img/loader.gif', __FILE__ ); ?>" alt=""></span>
+                <input type="submit" id="hs_submit" name="hs_submit" value="Отправить">
+                <span id="loader" style="display: none;">
+                    <img src="<?php echo plugins_url( 'img/loader.gif', __FILE__ ); ?>" alt="">
+                </span>
             </p>
             <div id="res"></div>
         </form>
