@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: Отправка сообщений и создание аккаунта на HubSpot.com
-Description: Плагин предоставляет виджет, позволяющий отправлять сообщения и создавать аккаунт на hubspot.com
+Plugin Name: Отправка сообщений на HubSpot.com
+Description: Плагин предоставляет виджет, позволяющий отправлять сообщения на hubspot.com
 Author: Дмитрий затуленко
 Plugin URI:
 Author URI:
@@ -81,21 +81,44 @@ function hs_messages_perpage_cb(){
     <?php
 }
 
+function hs_messages_hubspotapikey_cb(){
+    $options = get_option( 'hs_messages_options' );
+    ?>
+    <p>
+        <input type="text" name="hs_messages_options[hubspot_apikey]" id="hs_setting_hubspot_api_key" value="<?php echo $options['hubspot_apikey'] ?>" class="regular-text">
+    </p>
+    <?php
+}
+
+function hs_messages_notice_admin_cb(){
+    $options = get_option( 'hs_messages_options' );
+    ?>
+    <p>
+        <input type="checkbox" name="hs_messages_options[notice_admin]" id="hs_setting_notice_admin" value="<?php echo $options['notice_admin'] ?>"  class="regular-text">
+    </p>
+    <?php
+}
+
 function hs_messages_admin_settings(){
     // $option_group, $option_name, $sanitize_callback
 //    register_setting( 'hs_group', 'hs_messages_options', 'wfm_subscriber_sanitize' );
     register_setting( 'hs_group', 'hs_messages_options','hs_options_sanitize' );
 
     // $id, $title, $callback, $page
-    add_settings_section( 'hs_messages_section_id', 'Настройки пагинации для списка сообщений', '', 'hs-messages-options' );
+    add_settings_section( 'hs_messages_section_id', 'Настройки плагина', '', 'hs-messages-options' );
 
     // $id, $title, $callback, $page, $section, $args
     add_settings_field( 'hs_setting_perpage_id', 'Кол-во сообщений на страницу', 'hs_messages_perpage_cb', 'hs-messages-options', 'hs_messages_section_id', array( 'label_for' => 'hs_setting_perpage_id' ) );
+    add_settings_field( 'hs_setting_hubspot_apikey', 'HubSpot API KEY', 'hs_messages_hubspotapikey_cb', 'hs-messages-options', 'hs_messages_section_id', array( 'label_for' => 'hs_setting_hubspot_apikey' ) );
+//    add_settings_field( 'hs_setting_notice_admin', 'Уведомлять об отправке формы администратора ', 'hs_messages_notice_admin_cb', 'hs-messages-options', 'hs_messages_section_id', array( 'label_for' => 'hs_setting_notice_admin' ) );
+
 }
 
 function hs_options_sanitize($options){
     $clean_options = array();
     $clean_options['perpage'] = ( (int)$options['perpage'] > 0 ) ? (int)$options['perpage'] : 5;
+    $clean_options['hubspot_apikey'] = $options['hubspot_apikey'];
+//    $clean_options['notice_admin'] = $options['notice_admin'];
     return $clean_options;
 }
 
