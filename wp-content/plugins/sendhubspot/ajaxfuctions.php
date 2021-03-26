@@ -18,13 +18,13 @@ function hs_ajax_send_message()
     /* https://packagist.org/packages/hubspot/api-client */
 
 //    $api_key = 'b1014e95-add5-422c-a15f-75054137a8a8';
-    $options = get_option( 'hs_messages_options' );
+    $options = get_option('hs_messages_options');
     $api_key = $options['hubspot_apikey'];
+    $notice_admin = $options['notice_admin'];
 
-    $isSave = false;
+    $isSaveHubSpot = false;
 
-    if(!empty($api_key))
-    {
+    if (!empty($api_key)) {
         $postfields = "{\"properties\":{\"company\":\"\",\"email\":\"{$arr['hs_email']}\",\"firstname\":\"{$arr['hs_first_name']}\",\"lastname\":\"{$arr['hs_last_name']}\",\"phone\":\"\",\"website\":\"\"}}";
 
         $curl = curl_init();
@@ -54,33 +54,32 @@ function hs_ajax_send_message()
             exit("{\"success\":false,\"mess\":\"cURL Error #: {$err}\"}");
 //            echo "cURL Error #:" . $err;
         } else {
-            $isSave = true;
+            $isSaveHubSpot = true;
 //            echo $response;
         }
     }
 
-    $admin_email = get_option( 'admin_email');
-
-    wp_mail( $admin_email, 'Отправлен контакт с сайта','Отправлен контакт с сайта в HubSpot.com' );
-
-    if($isSave){
-        global $wpdb;
-
-        if ($wpdb->query($wpdb->prepare(
-            "INSERT INTO wp_hubspot_messages (firstname,lastname,subject,message,email,send) VALUES (%s,%s,%s,%s,%s,%s)",
-            $arr['hs_first_name'],
-            $arr['hs_last_name'],
-            $arr['hs_subject'],
-            $arr['hs_message'],
-            $arr['hs_email'],
-            '1'
-        ))) {
-            echo '{"success":true,"mess":"Сообщение отправлено!"}';
-        } else {
-            echo '{"success":false,"mess":"Ошибка записи!"}';
-        }
+    if ($notice_admin) {
+        $admin_email = get_option('admin_email');
+        wp_mail($admin_email, 'Отправлен контакт с сайта', 'Отправлен контакт с сайта в HubSpot.com');
     }
-    die;
+
+    global $wpdb;
+
+    if ($wpdb->query($wpdb->prepare(
+        "INSERT INTO wp_hubspot_messages (firstname,lastname,subject,message,email,is_save_hubspot) VALUES (%s,%s,%s,%s,%s,%s)",
+        $arr['hs_first_name'],
+        $arr['hs_last_name'],
+        $arr['hs_subject'],
+        $arr['hs_message'],
+        $arr['hs_email'],
+        $isSaveHubSpot ? '1' : '0'
+    ))) {
+        exit('{"success":true,"mess":"Сообщение отправлено!"}');
+    } else {
+        exit('{"success":false,"mess":"Ошибка записи!"}');
+    }
+    wp_die();
 }
 
 function checkFields($arr)

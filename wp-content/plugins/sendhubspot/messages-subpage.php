@@ -36,6 +36,7 @@ function hs_messages_subpage(){
                     <td>Тема</td>
                     <td>Сообщение</td>
                     <td>Email</td>
+                    <td>Сохранено на HubSpot.com</td>
                 </tr>
                 </thead>
                 <tbody>
@@ -47,6 +48,7 @@ function hs_messages_subpage(){
                         <td><?php echo $mess['subject']; ?></td>
                         <td><?php echo mb_strimwidth($mess['message'],0,30,'...'); ?></td>
                         <td><?php echo $mess['email']; ?></td>
+                        <td><?php echo !empty($mess['is_save_hubspot'])?'Да':'Нет'; ?></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
